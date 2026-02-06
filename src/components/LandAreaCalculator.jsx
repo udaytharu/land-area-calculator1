@@ -402,11 +402,12 @@ const LandAreaCalculator = () => {
           const v1 = triangle[i];
           const v2 = triangle[(i + 1) % 3];
           
-          // Check if this edge is NOT an Side
+          // Check if this edge is NOT an Side (not consecutive vertices)
           const isSide = verts.some((v, idx) => {
             const nextIdx = (idx + 1) % verts.length;
             const nextV = verts[nextIdx];
             
+            // Check if v1-v2 matches v-nextV or nextV-v
             const match1 = Math.abs(v.x - v1.x) < 0.1 && Math.abs(v.y - v1.y) < 0.1 &&
                           Math.abs(nextV.x - v2.x) < 0.1 && Math.abs(nextV.y - v2.y) < 0.1;
             const match2 = Math.abs(v.x - v2.x) < 0.1 && Math.abs(v.y - v2.y) < 0.1 &&
@@ -417,6 +418,7 @@ const LandAreaCalculator = () => {
           
           if (!isSide) {
             // This is an inner diagonal
+            // Create a unique key for this diagonal
             const points = [v1, v2];
             points.sort((a, b) => {
               if (a.x === b.x) return a.y - b.y;
@@ -1645,11 +1647,12 @@ const LandAreaCalculator = () => {
 
               <div className="p-6 border-t border-gray-200">
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
-                  <div className="flex gap-4 flex-1">
+                  {/* On mobile: stack buttons vertically, on desktop: keep them inline */}
+                  <div className="flex flex-col md:flex-row gap-4 w-full">
                     <button
                       onClick={handleCalculateArea}
                       disabled={!allInputsValid()}
-                      className={`flex-1 px-6 py-4 font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 ${
+                      className={`w-full md:flex-1 px-6 py-4 font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 ${
                         allInputsValid()
                           ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700'
                           : 'bg-gray-200 text-gray-500 cursor-not-allowed'
@@ -1662,24 +1665,24 @@ const LandAreaCalculator = () => {
                     </button>
                     <button
                       onClick={handleResetSideLengths}
-                      className="px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                      className="w-full md:w-auto px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                       </svg>
                       Reset
                     </button>
-                      <button
-                        onClick={handleDownloadCombinedImage}
-                        className="px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v6h16V4M4 10v6h16v-6M4 16v4h16v-4" />
-                        </svg>
-                        Download Snapshot
-                      </button>
-                    </div>
+                    <button
+                      onClick={handleDownloadCombinedImage}
+                      className="w-full md:w-auto px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v6h16V4M4 10v6h16v-6M4 16v4h16v-4" />
+                      </svg>
+                      Download Snapshot
+                    </button>
                   </div>
+                </div>
 
                 {calculatedArea && (
                   <button
@@ -1982,19 +1985,20 @@ const LandAreaCalculator = () => {
                 <div className="result-box bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 text-center border border-gray-200 hover:border-green-300 transition-all duration-300 hover:shadow-lg">
                   <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-xl mb-4">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2 8H22V16H2V8Z" fill="#3B82F6" fill-opacity="0.2"/>
-                    <rect x="2" y="8" width="20" height="8" rx="1" stroke="#3B82F6" stroke-width="1.5"/>
-
-                    <line x1="4" y1="8" x2="4" y2="14" stroke="#3B82F6" stroke-width="1.5"/>
-                    <line x1="8" y1="8" x2="8" y2="12" stroke="#3B82F6" stroke-width="1.5"/>
-                    <line x1="12" y1="8" x2="12" y2="14" stroke="#3B82F6" stroke-width="1.5"/>
-                    <line x1="16" y1="8" x2="16" y2="12" stroke="#3B82F6" stroke-width="1.5"/>
-                    <line x1="20" y1="8" x2="20" y2="14" stroke="#3B82F6" stroke-width="1.5"/> 
-
-                    <text x="4" y="20" fill="#3B82F6" font-size="4" text-anchor="middle">0</text>
-                    <text x="12" y="20" fill="#3B82F6" font-size="4" text-anchor="middle">5</text>
-                    <text x="20" y="20" fill="#3B82F6" font-size="4" text-anchor="middle">10</text>
-                  </svg>
+                                      
+                      <circle cx="12" cy="12" r="8" fill="#059669"/>
+                      <circle cx="12" cy="12" r="6" fill="#34D399"/>
+                      <circle cx="12" cy="12" r="4" fill="#10B981"/>
+                      <circle cx="12" cy="12" r="2" fill="#047857"/>
+                      
+                      <rect x="16" y="11" width="6" height="2" rx="1" fill="#059669"/>
+                      
+                      <rect x="17" y="11" width="1" height="2" fill="#FFFFFF"/>
+                      <rect x="19" y="11" width="1" height="2" fill="#FFFFFF"/>
+                      <rect x="21" y="11" width="1" height="2" fill="#FFFFFF"/>
+                      
+                      <path d="M14 5C14 6.65685 12.6569 8 11 8C9.34315 8 8 6.65685 8 5" stroke="#064E3B" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Square Feet</h3>
                   <div className="text-2xl font-bold text-green-600 mb-2">
@@ -2005,7 +2009,7 @@ const LandAreaCalculator = () => {
 
                 <div className="result-box bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 text-center border border-gray-200 hover:border-purple-300 transition-all duration-300 hover:shadow-lg">
                   <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-xl mb-4">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org2000/svg">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 
                     <rect x="5" y="8" width="14" height="12" fill="#C084FC" rx="1"/>
 
