@@ -489,6 +489,21 @@ svg {
     padding: 0.875rem 1rem;
     font-size: 0.9rem;
   }
+  
+  /* Make results panel buttons stack vertically on mobile */
+  .results-panel .flex-col.md\:flex-row .flex {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .results-panel .flex-col.md\:flex-row .flex button {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+  
+  .results-panel .flex-col.md\:flex-row .flex button:last-child {
+    margin-bottom: 0;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
